@@ -1,3 +1,5 @@
+import React from 'react'
+
 import {CSSProperties} from "react";
 
 const noDataStyle: CSSProperties = {

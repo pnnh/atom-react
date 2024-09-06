@@ -12,11 +12,3 @@ node_modules/
 /dist
 build/
 /lib
-*.d.ts
-*.js
-*.js.map
-esm/
-dts/
-.next/
-.rollup.cache/
-tsconfig.tsbuildinfo

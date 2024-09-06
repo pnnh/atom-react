@@ -1,5 +1,3 @@
-'use client'
-
 import {CSSProperties, useState} from 'react'
 
 export function PSImage(props: {

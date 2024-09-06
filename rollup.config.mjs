@@ -1,52 +1,25 @@
 import commonjs from '@rollup/plugin-commonjs'
-//import pkg from './package.json'
 import {nodeResolve} from '@rollup/plugin-node-resolve'
 import {visualizer} from 'rollup-plugin-visualizer'
 import strip from '@rollup/plugin-strip'
 import typescript from '@rollup/plugin-typescript'
 import dts from 'rollup-plugin-dts'
-// import sass from 'rollup-plugin-sass';
-// import autoprefixer from 'autoprefixer'
-// import css from "rollup-plugin-import-css";
-import del from 'rollup-plugin-delete'
 import json from '@rollup/plugin-json'
 import terser from '@rollup/plugin-terser'
-// import {RollupOptions} from "rollup";
-import preserveDirectives from 'rollup-preserve-directives'
+import pkg from "./package.json" with {type: "json"}
 
 const commonPlugins = [
-
-    //del({targets: 'lib/*'}),
     commonjs(),
     nodeResolve({
-        // extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        // moduleDirectories: ['node_modules', 'src'],
-        // preferBuiltins: false
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        moduleDirectories: ['node_modules', 'src'],
+        preferBuiltins: false
     }),
     json(),
     typescript({
         tsconfig: 'tsconfig.json',
+        outputToFilesystem: true
     }),
-    preserveDirectives(),
-    // sass(),
-    // scssPlugin({
-    //     // fileName: 'bundle.css',
-    //     include: ['**/*.css', '**/*.scss'],
-    //     exclude: 'node_modules/**'
-    // }),
-    // cssModules(),
-    // postcss({
-    //     // sourceMap: true,
-    //     extract: true,
-    //     plugins: [autoprefixer()],
-    //     // minimize: true,
-    //     // writeDefinitions: true,
-    //     modules: true,
-    //     namedExports: true,
-    //     // process: sass,
-    //     //use: ['scss'],
-    // }),
-    //css(),
     strip({
         include: ['**/*.(js|mjs|ts|tsx)'],
         debugger: true,
@@ -58,6 +31,12 @@ const commonPlugins = [
         filename: 'build/status.common.html'
     })
 ]
+const commonExternal = [
+    ...(pkg.dependencies ? Object.keys(pkg.dependencies) : []),
+    ...(pkg.peerDependencies ? Object.keys(pkg.peerDependencies) : []),
+    ...(pkg.devDependencies ? Object.keys(pkg.devDependencies) : [])
+]
+
 
 let commonConfig = [{
     strictDeprecations: true,
@@ -65,12 +44,10 @@ let commonConfig = [{
     output: {
         file: 'lib/index.common.mjs',
         format: 'esm',
-        sourcemap: false,
+        sourcemap: true,
         assetFileNames: '[name][extname]'
     },
-    external: [
-        //...Object.keys(pkg.dependencies || {})
-    ],
+    external: commonExternal,
     plugins: commonPlugins
 },
     {
@@ -81,7 +58,7 @@ let commonConfig = [{
             sourcemap: true,
             assetFileNames: '[name][extname]'
         },
-        external: [],
+        external: commonExternal,
         plugins: commonPlugins
     },
     {
@@ -99,10 +76,10 @@ const serverConfig = [{
     output: {
         file: 'lib/index.server.mjs',
         format: 'esm',
-        sourcemap: false,
+        sourcemap: true,
         assetFileNames: '[name][extname]'
     },
-    external: ['react'],
+    external: commonExternal,
     plugins: commonPlugins
 }, {
     input: 'src/index.server.tsx',
@@ -112,7 +89,7 @@ const serverConfig = [{
         sourcemap: true,
         assetFileNames: '[name][extname]'
     },
-    external: ['react'],
+    external: commonExternal,
     plugins: commonPlugins
 },
     {
@@ -133,7 +110,7 @@ const clientConfig = [{
         sourcemap: true,
         assetFileNames: '[name][extname]'
     },
-    external: ['react'],
+    external: commonExternal,
     plugins: commonPlugins
 }, {
     input: 'src/index.client.tsx',
@@ -143,7 +120,7 @@ const clientConfig = [{
         sourcemap: true,
         assetFileNames: '[name][extname]'
     },
-    external: ['react'],
+    external: commonExternal,
     plugins: commonPlugins
 },
     {

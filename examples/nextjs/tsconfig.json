@@ -4,19 +4,17 @@
     "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "Node",
-    "resolveJsonModule": true,
     "noImplicitAny": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "allowJs": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "esModuleInterop": true,
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "rootDir": "src",
+    "outDir": "dist",
     "baseUrl": ".",
-    "outDir": "dts",
     "declaration": true,
-    "declarationDir": "dts",
     "emitDeclarationOnly": false,
     "paths": {
       "@/*": [
@@ -24,6 +22,9 @@
       ]
     },
     "plugins": [
+      {
+        "name": "next"
+      }
     ],
     "lib": [
       "dom",
@@ -31,19 +32,20 @@
       "esnext"
     ],
     "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "incremental": true,
+    "resolveJsonModule": true,
     "isolatedModules": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "build/types/**/*.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "dist",
-    "esm",
     "node_modules",
-    "packages",
-    "examples",
-    "rollup.config.mjs"
+    "packages"
   ]
 }
