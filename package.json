@@ -4,8 +4,11 @@
   "description": "个人项目公共组件",
   "license": "AGPL-3.0",
   "scripts": {
-    "build": "rollup --config rollup.config.mjs",
-    "publish": "npm run build && npm publish"
+    "build": "rollup --config rollup.config.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pnnh/atom-react.git"
   },
   "exports": {
     ".": {
