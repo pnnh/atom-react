@@ -1,36 +1,34 @@
 import commonjs from '@rollup/plugin-commonjs'
 import {nodeResolve} from '@rollup/plugin-node-resolve'
-import {visualizer} from 'rollup-plugin-visualizer'
-import strip from '@rollup/plugin-strip'
+import sass from 'rollup-plugin-sass';
 import typescript from '@rollup/plugin-typescript'
-import dts from 'rollup-plugin-dts'
 import json from '@rollup/plugin-json'
 import terser from '@rollup/plugin-terser'
 import pkg from "./package.json" with {type: "json"}
 
-const commonPlugins = [
-    commonjs(),
-    nodeResolve({
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        moduleDirectories: ['node_modules', 'src'],
-        preferBuiltins: false
-    }),
-    json(),
-    typescript({
-        tsconfig: 'tsconfig.json',
-        outputToFilesystem: true
-    }),
-    strip({
-        include: ['**/*.(js|mjs|ts|tsx)'],
-        debugger: true,
-        functions: ['console.log', 'console.debug'],
-        sourceMap: true
-    }),
-    terser(),
-    visualizer({
-        filename: 'build/status.common.html'
-    })
-]
+function commonPlugins(module) {
+    const plugins = [
+        commonjs(),
+        nodeResolve({
+            extensions: ['.js', '.jsx', '.ts', '.tsx'],
+            moduleDirectories: ['node_modules', 'src'],
+            preferBuiltins: false
+        }),
+        json(),
+        typescript({
+            tsconfig: 'tsconfig.json',
+            outputToFilesystem: true
+        }),
+        terser()
+    ]
+    if (module) {
+        plugins.push(sass({
+            output: `lib/assets/index.${module}.css`,
+        }),)
+    }
+    return plugins
+}
+
 const commonExternal = [
     ...(pkg.dependencies ? Object.keys(pkg.dependencies) : []),
     ...(pkg.peerDependencies ? Object.keys(pkg.peerDependencies) : []),
@@ -48,7 +46,7 @@ let commonConfig = [{
         assetFileNames: '[name][extname]'
     },
     external: commonExternal,
-    plugins: commonPlugins
+    plugins: commonPlugins('common')
 },
     {
         input: 'src/index.common.tsx',
@@ -59,15 +57,7 @@ let commonConfig = [{
             assetFileNames: '[name][extname]'
         },
         external: commonExternal,
-        plugins: commonPlugins
-    },
-    {
-        input: 'lib/dts/index.common.d.ts',
-        output: [{file: 'lib/index.common.d.ts'}],
-        external: [/\.(css|scss)$/],
-        plugins: [
-            dts()
-        ]
+        plugins: commonPlugins('common')
     }
 ]
 
@@ -80,7 +70,7 @@ const serverConfig = [{
         assetFileNames: '[name][extname]'
     },
     external: commonExternal,
-    plugins: commonPlugins
+    plugins: commonPlugins('server')
 }, {
     input: 'src/index.server.tsx',
     output: {
@@ -90,16 +80,8 @@ const serverConfig = [{
         assetFileNames: '[name][extname]'
     },
     external: commonExternal,
-    plugins: commonPlugins
-},
-    {
-        input: 'lib/dts/index.server.d.ts',
-        output: [{file: 'lib/index.server.d.ts'}],
-        external: [/\.(css|scss)$/],
-        plugins: [
-            dts()
-        ]
-    }
+    plugins: commonPlugins('server')
+}
 ]
 
 const clientConfig = [{
@@ -111,7 +93,7 @@ const clientConfig = [{
         assetFileNames: '[name][extname]'
     },
     external: commonExternal,
-    plugins: commonPlugins
+    plugins: commonPlugins('client')
 }, {
     input: 'src/index.client.tsx',
     output: {
@@ -121,16 +103,8 @@ const clientConfig = [{
         assetFileNames: '[name][extname]'
     },
     external: commonExternal,
-    plugins: commonPlugins
-},
-    {
-        input: 'lib/dts/index.client.d.ts',
-        output: [{file: 'lib/index.client.d.ts'}],
-        external: [/\.(css|scss)$/],
-        plugins: [
-            dts()
-        ]
-    }
+    plugins: commonPlugins('client')
+}
 ]
 
 const exportConfig = commonConfig.concat(serverConfig).concat(clientConfig)
